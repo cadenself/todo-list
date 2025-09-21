@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pro To-Do List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Basic Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #121212;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .todo-app {
+      background: #1e1e1e;
+      padding: 30px 25px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+    }
+
+    .todo-app h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0fdb7d;
+    }
+
+    .input-group {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .input-group input {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 6px 0 0 6px;
+      font-size: 1rem;
+    }
+
+    .input-group button {
+      padding: 12px 18px;
+      background-color: #0fdb7d;
+      border: none;
+      border-radius: 0 6px 6px 0;
+      font-weight: bold;
+      cursor: pointer;
+      color: #121212;
+      transition: background 0.3s;
+    }
+
+    .input-group button:hover {
+      background-color: #0bc56b;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    li {
+      background: #2a2a2a;
+      padding: 12px 14px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: 0.2s;
+    }
+
+    li.completed {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    .actions button {
+      background: none;
+      border: none;
+      color: #bbb;
+      cursor: pointer;
+      margin-left: 8px;
+      font-size: 1rem;
+    }
+
+    .actions button:hover {
+      color: #ff6b6b;
+    }
+  </style>
+</head>
+<body>
+
+<div class="todo-app">
+  <h1>Pro To-Do List</h1>
+
+  <div class="input-group">
+    <input type="text" id="taskInput" placeholder="Enter a new task..." />
+    <button onclick="addTask()">Add</button>
+  </div>
+
+  <ul id="taskList"></ul>
+</div>
+
+<script>
+  const taskInput = document.getElementById("taskInput");
+  const taskList = document.getElementById("taskList");
+
+  let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+  function renderTasks() {
+    taskList.innerHTML = "";
+
+    tasks.forEach((task, index) => {
+      const li = document.createElement("li");
+      if (task.done) li.classList.add("completed");
+
+      li.innerHTML = `
+        <span onclick="toggleTask(${index})">${task.text}</span>
+        <div class="actions">
+          <button onclick="deleteTask(${index})">✖</button>
+        </div>
+      `;
+      taskList.appendChild(li);
+    });
+
+    saveTasks();
+  }
+
+  function addTask() {
+    const text = taskInput.value.trim();
+    if (!text) return;
+
+    tasks.push({ text, done: false });
+    taskInput.value = "";
+    renderTasks();
+  }
+
+  function deleteTask(index) {
+    tasks.splice(index, 1);
+    renderTasks();
+  }
+
+  function toggleTask(index) {
+    tasks[index].done = !tasks[index].done;
+    renderTasks();
+  }
+
+  function saveTasks() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }
+
+  // Allow pressing Enter to add
+  taskInput.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      addTask();
+    }
+  });
+
+  // Initial load
+  renderTasks();
+</script>
+
+</body>
+</html>
